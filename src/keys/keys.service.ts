@@ -1,26 +1,37 @@
+import { Prisma } from '@prisma/client';
+import { KeysRepository } from './keys.repository';
 import { Injectable } from '@nestjs/common';
-import { CreateKeyDto } from './dto/create-key.dto';
-import { UpdateKeyDto } from './dto/update-key.dto';
-
 @Injectable()
 export class KeysService {
-  create(createKeyDto: CreateKeyDto) {
-    return 'This action adds a new key';
+  constructor(private readonly keyRepository: KeysRepository) {}
+
+  create(value: string) {
+    return this.keyRepository.createKey(value);
   }
 
   findAll() {
-    return `This action returns all keys`;
+    return this.keyRepository.getKeys();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} key`;
+  findOne(value: string);
+  findOne(id: number);
+  findOne(arg: string | number) {
+    try {
+      if (typeof arg === 'number') {
+        return this.keyRepository.getKeyById(arg);
+      } else if (typeof arg === 'string') {
+        return this.keyRepository.getKeyByValue(arg);
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
-  update(id: number, updateKeyDto: UpdateKeyDto) {
-    return `This action updates a #${id} key`;
+  update(value: string, newData: Prisma.KeyUpdateInput) {
+    return this.keyRepository.updateKey(value, newData);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} key`;
+  remove(value: string) {
+    return this.keyRepository.deleteKey(value);
   }
 }

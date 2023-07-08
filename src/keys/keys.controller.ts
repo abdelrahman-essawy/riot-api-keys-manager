@@ -1,42 +1,42 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Version,
+  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { KeysService } from './keys.service';
-import { CreateKeyDto } from './dto/create-key.dto';
 import { UpdateKeyDto } from './dto/update-key.dto';
 
 @Controller('keys')
 export class KeysController {
   constructor(private readonly keysService: KeysService) {}
 
-  @Post()
-  create(@Body() createKeyDto: CreateKeyDto) {
-    return this.keysService.create(createKeyDto);
+  @Post(':value')
+  create(@Param('value') value: string) {
+    return this.keysService.create(value);
   }
-
   @Get()
   findAll() {
     return this.keysService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.keysService.findOne(+id);
+  @Get(':value')
+  findOne(@Param('value') value: string) {
+    return this.keysService.findOne(value);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateKeyDto: UpdateKeyDto) {
-    return this.keysService.update(+id, updateKeyDto);
+  @Patch(':value')
+  update(@Param('value') value: string, @Body() newData: UpdateKeyDto) {
+    return this.keysService.update(value, newData);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.keysService.remove(+id);
+  @Delete(':value')
+  remove(@Param('value') value: string) {
+    return this.keysService.remove(value);
   }
 }

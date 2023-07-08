@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Key {
+  id                         Int        @id @default(autoincrement())
+  value                      String     @unique
+  createdAt                  DateTime   @default(now())
+  totalRequestCount          Int        @default(0)
+  requestCountSinceLastReset Int        @default(0)
+  lastRequestAt              DateTime?
+  status                     KeyStatus  @default(UNKNOWN)
+  state                      KeyState   @default(NOT_WORKING)
+  resetAt                    DateTime?
+  resetCount                 Int        @default(0)
+  consumers                  Consumer[]
+
+  @@index([value], type: Hash)
+}
+
+model Consumer {
+  id     Int      @id @default(autoincrement())
+  name   String
+  usedAt DateTime @default(now())
+  Key    Key?     @relation(fields: [keyId], references: [id])
+  keyId  Int?
+}
+
+enum KeyStatus {
+  AVAILABLE
+  NEAR_AVAILABILITY
+  NEAR_EXHAUSTION
+  EXHAUSTED
+  EXPIRED
+  UNKNOWN
+}
+
+enum KeyState {
+  WORKING
+  NOT_WORKING
+  RESTING
+}
